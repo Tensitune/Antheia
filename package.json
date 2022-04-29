@@ -1,0 +1,28 @@
+{
+  "name": "antheia",
+  "version": "1.0.0",
+  "description": "Discord bot",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon --watch src src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tensitune/Antheia.git"
+  },
+  "author": "Tensitune",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Tensitune/Antheia/issues"
+  },
+  "homepage": "https://github.com/Tensitune/Antheia#readme",
+  "dependencies": {
+    "eris": "github:abalabahaha/eris#dev"
+  },
+  "devDependencies": {
+    "eslint": "^8.14.0",
+    "nodemon": "^2.0.16",
+    "prettier": "^2.6.2"
+  }
+}
