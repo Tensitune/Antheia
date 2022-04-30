@@ -5,11 +5,7 @@ const Command = require("./lib/command");
 const fs = require("fs");
 const { resolve } = require("path");
 
-const bot = new Eris(config.token, {
-  defaultImageFormat: "png",
-  defaultImageSize: 1024,
-  intents: Object.keys(Eris.Constants.Intents)
-});
+const bot = new Eris(config.token, { intents: Object.keys(Eris.Constants.Intents) });
 
 bot.config = config;
 bot.commands = new Eris.Collection();
@@ -33,9 +29,10 @@ bot.on("ready", async () => {
   }  
 });
 
-bot.on("messageCreate", async (msg) => {
-  if (!(msg.channel instanceof Eris.Channel)) return;
-  await CommandDispatcher(msg);
+bot.on("messageCreate", async message => {
+  if (message.channel instanceof Eris.Channel) {
+    await CommandDispatcher(message);
+  }
 });
 
 bot.on("error", (err) => {

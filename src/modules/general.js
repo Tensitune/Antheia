@@ -6,7 +6,7 @@ module.exports = bot => {
   help.description = "Lists all commands";
   help.usage = "[command] or [--category]";
   help.category = CATEGORY;
-  help.callback = (message, line) => {
+  help.callback = (_, line) => {
     const sorted = {};
 
     for (const cmd of bot.commands.values()) {

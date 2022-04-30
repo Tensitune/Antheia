@@ -18,7 +18,7 @@ function parseArguments(str) {
 module.exports = bot => {
   async function runCommand(message, cmd, line, args) {
     const cmdObj = bot.commands.get(cmd);
-    if (!cmdObj) return null;
+    if (!cmdObj) return "Command not found.";
 
     if (!message.guildID) {
       return "This command can only be used in guilds.";
@@ -34,17 +34,17 @@ module.exports = bot => {
   }
 
   return async function CommandDispatcher(message) {
-    let str = message.content;
+    let content = message.content;
     let isCommand = false;
   
     const prefix = bot.config.prefix;
-    if (str.startsWith(prefix)) {
-      str = str.substring(prefix.length);
+    if (content.startsWith(prefix)) {
+      content = content.substring(prefix.length);
       isCommand = true;
     }
   
     if (isCommand) {
-      let line = str.split(" ");
+      let line = content.split(" ");
       let [cmd] = line.splice(0, 1);
       cmd = cmd.toLowerCase();
       line = line.join(" ");
@@ -55,11 +55,11 @@ module.exports = bot => {
         const response = await runCommand(message, cmd, line, args);
         if (response != null) {
           let file;
+          
           if (response.file) {
             file = response.file;
             delete response.file;
           }
-          
           if (response.embed) {
             response.embeds = [...(response.embeds ?? []), response.embed];
             delete response.embed;
@@ -96,28 +96,14 @@ module.exports = bot => {
                 }
               }
             } catch (err) {
-              message.channel.createMessage({
-                content: `:warning: An error has occurred:\n\`\`\`${err}\`\`\``,
-                allowedMentions: {
-                  repliedUser: false
-                },
-                messageReference: {
-                  messageID: message.id
-                }
-              });
+              message.channel.createMessage({ content: ":warning: An internal error occurred." });
+              console.error(err);
             }
           }
         }
       } catch (err) {
-        message.channel.createMessage({
-          content: `:warning: An error has occurred:\n\`\`\`${err}\`\`\``,
-          allowedMentions: {
-            repliedUser: false
-          },
-          messageReference: {
-            messageID: message.id
-          }
-        });
+        message.channel.createMessage({ content: ":warning: An internal error occurred." });
+        console.error(err);
       }
     }
   };
