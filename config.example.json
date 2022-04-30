@@ -1,4 +1,5 @@
 {
   "token": "",
-  "guildId": ""
+  "prefix": ".",
+  "color": "#FAA06E"
 }

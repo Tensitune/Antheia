@@ -5,18 +5,24 @@ module.exports = bot => {
   const ping = new Command("ping");
   ping.description = "Measures response time to Discord.";
   ping.category = CATEGORY;
-  ping.callback = async interaction => {
-    await interaction.createMessage({ content: "Pong." });
-    
-    const originalMsg = await interaction.getOriginalMessage();
-    const rtt = Math.floor(originalMsg.timestamp - interaction.createdAt);
+  ping.callback = async message => {
+    const newMessage = await message.channel.createMessage({
+      content: "Pong.",
+      allowedMentions: {
+        repliedUser: false
+      },
+      messageReference: {
+        messageID: message.id
+      }  
+    });
+    const rtt = Math.floor(newMessage.timestamp - message.timestamp);
 
-    await interaction.editOriginalMessage({
+    await newMessage.edit({
       content: `Pong. RTT: \`${rtt}ms\``,
       allowedMentions: {
-        users: false
-      }
+        repliedUser: false
+      }  
     });
   };
-  bot.registerSlashCommand(ping);
+  bot.registerModuleCommand(ping);
 };

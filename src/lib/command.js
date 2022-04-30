@@ -1,8 +1,8 @@
 class Command {
   constructor(name) {
     this.name = name;
-    this.arguments = [];
     this.description = "No description provided.";
+    this.usage = "###";
     this.category = "unsorted";
   }
 

@@ -2,44 +2,47 @@ const Eris = require("eris");
 const config = require("../config.json");
 const Command = require("./lib/command");
 
+const fs = require("fs");
+const { resolve } = require("path");
+
 const bot = new Eris(config.token, {
   defaultImageFormat: "png",
   defaultImageSize: 1024,
   intents: Object.keys(Eris.Constants.Intents)
 });
 
-bot.slashCommands = [];
-bot.registerSlashCommand = cmdObj => {
-  if (!(cmdObj instanceof Command)) return;
+bot.config = config;
+bot.commands = new Eris.Collection();
 
-  bot.createGuildCommand(config.guildId, {
-    name: cmdObj.name,
-    description: cmdObj.description,
-    type: 1
-  })
-  .then(() => console.log(`Registered command '${cmdObj.name}'`))
-  .catch(console.error);
-
-  bot.slashCommands.push(cmdObj);
+bot.registerModuleCommand = cmdObj => {
+  if (cmdObj instanceof Command) {
+    bot.commands.set(cmdObj.name, cmdObj);
+    console.log(`Registered command '${cmdObj.name}'`);
+  }
 };
+
+const CommandDispatcher = require("./lib/commandDispatcher")(bot);
 
 bot.on("ready", async () => {
   console.log("Connected to Discord.");
   console.log(`Logged in as: ${bot.user.username}#${bot.user.discriminator} (${bot.user.id})`);
   
-  require("./modules")(bot);
+  for (const file of fs.readdirSync(resolve(__dirname, "modules"))) {
+    require(resolve(__dirname, "modules", file))(bot);
+    console.log(`Loaded module: '${file}'`);
+  }  
 });
 
-bot.on("interactionCreate", async interaction => {
-  if (!(interaction instanceof Eris.CommandInteraction)) return;
+bot.on("messageCreate", async (msg) => {
+  if (!(msg.channel instanceof Eris.Channel)) return;
+  await CommandDispatcher(msg);
+});
 
-  for (let i = 0; i < bot.slashCommands.length; i++) {
-    const slashCommand = bot.slashCommands[i];
-    if (interaction.data.name === slashCommand.name) {
-      slashCommand.callback(interaction, ...slashCommand.arguments);
-      break;
-    }
-  }
+bot.on("error", (err) => {
+  console.error("Catching error: " + err);
+});
+bot.on("warn", (err) => {
+  console.warn("Catching warn: " + err);
 });
 
 bot.connect();
