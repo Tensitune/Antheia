@@ -6,7 +6,7 @@ class Command {
   }
 
   callback() {
-    return "Callback not overwritten.";
+    return "Callback is not overwritten.";
   }
 }
 

@@ -17,7 +17,7 @@ bot.registerModuleCommand = cmdObj => {
   }
 };
 
-const CommandDispatcher = require("./lib/commandDispatcher")(bot);
+const CommandHandler = require("./lib/commandHandler")(bot);
 
 bot.on("ready", async () => {
   console.log("Connected to Discord.");
@@ -31,14 +31,15 @@ bot.on("ready", async () => {
 
 bot.on("messageCreate", async message => {
   if (message.channel instanceof Eris.Channel) {
-    await CommandDispatcher(message);
+    await CommandHandler(message);
   }
 });
 
-bot.on("error", (err) => {
+bot.on("error", err => {
   console.error("Catching error: " + err);
 });
-bot.on("warn", (err) => {
+
+bot.on("warn", err => {
   console.warn("Catching warn: " + err);
 });
 
