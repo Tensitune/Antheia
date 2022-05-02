@@ -23,6 +23,10 @@ module.exports = bot => {
     if (!message.guildID) {
       return "This command can only be used in guilds.";
     }
+
+    if (!command.checkRestrictions(message.member)) {
+      return "You don't have permissions to use this command.";
+    }
     
     try {
       return await command.callback(message, line, ...args);
